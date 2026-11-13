@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: culinarypulse-api
+    runtime: python
+    plan: standard
+    buildCommand: pip install -r requirements-api.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.11
+      - key: CULINARPULSE_DATASET_PATH
+        value: /var/data/data.json.gz
+      - key: CORS_ORIGINS
+        value: https://your-site.netlify.app,http://localhost:5173
+    disk:
+      name: culinarypulse-data
+      mountPath: /var/data
+      sizeGB: 1
