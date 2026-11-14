@@ -13,9 +13,9 @@ Raw Yelp source files, generated databases/models, local environments, presentat
 
 ## Dataset requirement and terms
 
-The API requires a prepared `data.json` or `data.json.gz` dataset. No review dataset is included in this upload folder. The Yelp dataset agreement shipped with the source material limits use to academic purposes. Because this is a restaurant-management app, do not use Yelp review text as its public or production data unless you have explicit separate permission. Supply a dataset you are authorized to serve instead.
+The repository currently includes a prepared `data.json.gz` dataset for local testing. The Yelp dataset agreement limits use to academic purposes. Because this is a restaurant-management app, do not serve this Yelp review text publicly or use it in production unless you have explicit separate permission. Replace it with a dataset you are authorized to serve before a public deployment.
 
-The Render service reads `/var/data/data.json.gz` by default. Put an authorized prepared dataset on its persistent disk at that path (or change `CULINARPULSE_DATASET_PATH` to the mounted file path), then restart the API. Until data is provided, the service starts but dashboard data endpoints return a clear unavailable response. Keep any private-storage credentials out of GitHub.
+The Render service reads `/var/data/data.json.gz` by default. Put your authorized prepared dataset on its persistent disk at that path (or change `CULINARPULSE_DATASET_PATH` to the mounted file path), then restart the API. Until data is provided, the service starts but dashboard data endpoints return a clear unavailable response. Keep any private-storage credentials out of GitHub.
 
 ## Run locally
 
@@ -57,7 +57,7 @@ This folder has no inherited Git history, so it avoids the multi-gigabyte source
 1. Connect the new repository to Render and deploy the Blueprint in `render.yaml`. The API uses a Standard instance and a 1 GB persistent disk; both can incur charges.
 2. Provide an authorized `data.json.gz` on the mounted `/var/data` disk. You can use the Render Shell to download it from storage you control; do not commit the data file or storage credentials.
 3. In Render, set `CORS_ORIGINS` to your exact frontend origin, for example `https://your-site.netlify.app` (include `http://localhost:5173` only if needed).
-4. Connect the same repository to Netlify. It reads `netlify.toml`; set `VITE_API_BASE_URL` to the Render API URL, then deploy.
+4. Connect the same repository to Netlify. It reads `netlify.toml` and builds only the React frontend; set the Netlify environment variable `VITE_API_BASE_URL` to the Render API URL, then deploy. Netlify does not host this FastAPI service.
 5. Confirm the Render `/` health endpoint reports `"status":"ok"` and the Netlify dashboard can load restaurants.
 
 `CULINARPULSE_DATASET_PATH` selects a local JSON or gzip JSON file. `CORS_ORIGINS` is a comma-separated list of allowed browser origins. `VITE_API_BASE_URL` is embedded into the frontend at build time.

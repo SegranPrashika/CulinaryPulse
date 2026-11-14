@@ -1,6 +1,6 @@
 import ast
 import gzip
-import json
+import ijson
 import os
 import re
 from collections import Counter, defaultdict
@@ -26,10 +26,13 @@ def _load_dataset():
     )
     opener = gzip.open if dataset_path.suffix.lower() == ".gz" else open
     try:
-        with opener(dataset_path, "rt", encoding="utf-8") as file:
-            dataset = json.load(file)
-    except (OSError, json.JSONDecodeError) as error:
+        with opener(dataset_path, "rb") as file:
+            metadata = next(ijson.items(file, "metadata", use_float=True), None)
+        with opener(dataset_path, "rb") as file:
+            businesses = list(ijson.items(file, "businesses.item", use_float=True))
+    except (OSError, ijson.common.JSONError) as error:
         return None, f"Could not load curated dataset at {dataset_path}: {error}"
+    dataset = {"metadata": metadata, "businesses": businesses}
     if not isinstance(dataset, dict) or not isinstance(dataset.get("metadata"), dict):
         return None, "data.json does not have the curated dataset format; run review_pipeline.py --phase all."
     businesses = dataset.get("businesses")
